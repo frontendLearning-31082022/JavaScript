@@ -36,7 +36,10 @@ class Client {
 // Вам необходимо реализовать класс, который управляет заказами и поварами.
 class Manager {
   #order_genIDs
-  
+  #workers
+  #dishes
+  #orders
+  #emploeyers_respons
 
   /**
   * Конструктор для менеджера заказов
@@ -89,15 +92,15 @@ class Manager {
         return el != undefined;
       }
     };
-    this.dishes = new dishStruct(dishes);
+    this.#dishes = new dishStruct(dishes);
 
-    this.emploeyers_respons = emploeyers_respons;
+    this.#emploeyers_respons = emploeyers_respons;
 
     const genIdWorkers = genIDs();
-    this.workers = workers.map(x => { return { id: genIdWorkers(), name: x } })
+    this.#workers = workers.map(x => { return { id: genIdWorkers(), name: x } })
 
 
-    this.orders = [];
+    this.#orders = [];
     this.#order_genIDs = genIDs();
   }
 
@@ -123,9 +126,9 @@ class Manager {
     const order={
       orderData: orderData,
       id: this.#order_genIDs(),
-      workers: [...new Set(orderData.map(x => x.type))].map(x => this.emploeyers_respons.get(x))
+      workers: [...new Set(orderData.map(x => x.type))].map(x => this.#emploeyers_respons.get(x))
     };
-    this.orders.push(order)
+    this.#orders.push(order)
 
     console.log(``);
     console.log(`Клиент ${client.firstname} заказал:`);
@@ -134,7 +137,7 @@ class Manager {
         console.log(partOrderSystem[i]);
         return;
       }
-      console.log(`${x.type} "${x.name}" - ${x.quantity}; готовит повар ${this.workers[this.emploeyers_respons.get(x.type)].name}`);
+      console.log(`${x.type} "${x.name}" - ${x.quantity}; готовит повар ${this.#workers[this.#emploeyers_respons.get(x.type)].name}`);
     })
     if(!partOrderSystem.every(x=>x==null))console.log(`Заказ №${order.id} выполнен частично`);
   }
@@ -164,11 +167,11 @@ class Manager {
           knownError = true;
           throw newError(`Неправильный тип данных для orderData`);
         }
-        if (!cntxt.emploeyers_respons.has(orderData.type)) {
+        if (!cntxt.#emploeyers_respons.has(orderData.type)) {
           knownError = true;
           throw new Error(`Данный вид продукта ${orderData.type} не готовится`);
         }
-        if (!cntxt.dishes.has(orderData.type, orderData.name)) {
+        if (!cntxt.#dishes.has(orderData.type, orderData.name)) {
           knownError = true;
           throw new Error(`${orderData.type} "${orderData.name}" - такого блюда не существует`);
         }
