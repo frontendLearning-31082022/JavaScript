@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- <script src="1.js"></script> -->
+  <!-- <script src="2.js" defer></script> -->
+
+  <!-- <script src="2.js" defer></script> -->
+  <script src="DomReact.js" defer></script>
+
+
+
+  <script>
+    const initialData = [
+      {
+        product: "Apple iPhone 13",
+        reviews: [
+          {
+            review:'',
+            id: 1,
+            text: "Отличный телефон! Батарея держится долго.",
+          },
+          {
+            review:'',
+            id: 2,
+            text: "Камера супер, фото выглядят просто потрясающе.",
+          },
+        ],
+      },
+      {
+        product: "Samsung Galaxy Z Fold 3",
+        reviews: [
+          {
+            review:'',
+            id: 3,
+            text: "Интересный дизайн, но дорогой.",
+          },
+        ],
+      },
+      {
+        product: "Sony PlayStation 5",
+        reviews: [
+          {
+            review:'',
+            id: 4,
+            text: "Люблю играть на PS5, графика на высоте.",
+          },
+        ],
+      },
+    ];
+
+
+
+
+    let templateMap = new Map([
+
+      ['product', {
+        parentNode: 'product-list',
+        className: 'product'
+      }],
+      ['reviews', {
+        parentNode: 'product',
+        className: 'reviews'
+      }],
+
+
+
+    ]);
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const domReact = new DomReact(initialData, templateMap);
+      window.domReact = domReact;
+    }, false);
+
+  </script>
+
+
+</head>
+
+<body>
+
+  <div class="product-list">
+
+  </div>
+
+</body>
+
+</html>
