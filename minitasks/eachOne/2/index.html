@@ -11,20 +11,17 @@
   <!-- <script src="2.js" defer></script> -->
   <script src="DomReact.js" defer></script>
 
-
-
   <script>
     const initialData = [
       {
         product: "Apple iPhone 13",
         reviews: [
           {
-            review:'',
             id: 1,
             text: "Отличный телефон! Батарея держится долго.",
           },
           {
-            review:'',
+
             id: 2,
             text: "Камера супер, фото выглядят просто потрясающе.",
           },
@@ -34,7 +31,6 @@
         product: "Samsung Galaxy Z Fold 3",
         reviews: [
           {
-            review:'',
             id: 3,
             text: "Интересный дизайн, но дорогой.",
           },
@@ -44,7 +40,6 @@
         product: "Sony PlayStation 5",
         reviews: [
           {
-            review:'',
             id: 4,
             text: "Люблю играть на PS5, графика на высоте.",
           },
@@ -52,32 +47,46 @@
       },
     ];
 
+    let format = initialData.map(x => { return { product: x } });
+    debugger;
 
 
 
-    let templateMap = new Map([
+    // let templateMap = new Map([
 
-      ['product', {
-        parentNode: 'product-list',
-        className: 'product'
-      }],
-      ['reviews', {
-        parentNode: 'product',
-        className: 'reviews'
-      }],
+    //   ['product', {
+    //     parentNode: 'product-list',
+    //     className: 'product'
+    //   }],
+    //   ['reviews', {
+    //     parentNode: 'product',
+    //     className: 'reviews'
+    //   }],
 
 
 
-    ]);
+    // ]);
 
 
     document.addEventListener('DOMContentLoaded', function () {
-      const domReact = new DomReact(initialData, templateMap);
+      const domReact = new DomReact(format, document.getElementsByClassName('product-list')[0]);
       window.domReact = domReact;
     }, false);
 
   </script>
 
+  <style>
+    .product {
+      border: solid #adadad;
+      margin: 20px;
+      border-width: 1px;
+    }
+
+    .reviews {
+      margin-left: 20px;
+      font-size: 9px;
+    }
+  </style>
 
 </head>
 
