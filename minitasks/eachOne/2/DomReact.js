@@ -1,15 +1,27 @@
 class DomReact {
     /** vars from args not storing */
-    constructor(data, parentNode) {
+    constructor(data, parentNode, enableVIDs) {
         this.reactVars = new Map();
+        this.enableVIDs = enableVIDs;
         // this.templateMap;
-        // this.genRV = function () {
-        //     let id = 0;
-        //     function get() {
-        //         id++;
-        //         return idV+id;
-        //     }
-        // }
+        this.genRV = function () {
+            let id = 0;
+            function get() {
+                id++;
+                return "idV" + id;
+            }
+            return get;
+        }();
+        this.genGlobal = function () {
+            let id = 100;
+            function get() {
+                id++;
+                return "idV" + id;
+            }
+            return get;
+        }();
+
+
         this.root = new DomVar([], 'root', null)
         this.root.dom = parentNode;
         this.recurEnter(data, null, this.root);
@@ -53,16 +65,38 @@ class DomReact {
         // let fields=Object.entries(object);
 
         // let domVar = new DomVar(name, this.templateMap.get(name).parentNode, val, this.genRV.get());
-        let domVar = new DomVar(fields, name, parNode);
+        debugger;
+        const domVar = new DomVar(fields, name, parNode, this.enableVIDs ? this.genRV() : undefined);
+        this.reactVars.set(domVar.vRD_id, domVar);
         // arr.push(domVar);
 
         return domVar;
     }
 
+    getVar(vRD_id) {
+        return this.reactVars.get(vRD_id);
+    }
+    addVar(fields, parentDomVar) {
+        debugger;
+        // let fields = new Map();
+        // fields.set("text", text);
+
+        // m.s
+        // let fields=Array.from(map, ([name, value]) => ({ name, value }));
+
+
+        const domVar = new DomVar(fields, name, parentDomVar, this.enableVIDs ? this.genRV() : undefined);
+        this.reactVars.set(domVar.vRD_id, domVar);
+    }
+
+
+
 }
 class DomVar {
-    constructor(fields, name, parNode, idVirtual) {
+    constructor(fields, name, parNode, vRD_id) {
         this.children = [];
+
+        this.vRD_id = vRD_id;
 
         this.name = name;
         if (this.name) {
@@ -73,12 +107,21 @@ class DomVar {
         }
 
         this.parNode = parNode;
-        // this.idVirtual=idVirtual;
 
         this.fields = new Map(fields);
 
         this.id = this.fields.get('id');
         this.fields.delete('id');
+
+        if (this.fields.has('vRDelement')) {
+            this.vRDelement = this.fields.get('vRDelement');
+            this.fields.delete('vRDelement');
+        }
+        if (this.fields.has('onclick')) {
+            this.onclick = this.fields.get('onclick');
+            this.fields.delete('onclick');
+        }
+
         this.textContent = Array.from(this.fields, ([name, value]) => ({ name, value })).map(x => x.value).join(' ');
         // debugger;  
         // this.textContent=this.fields.entries.  
@@ -86,6 +129,7 @@ class DomVar {
         if (this.name !== 'root') this.parNode.children.push(this);
 
         this.initDomStruct();
+
         // if (!fields) return;
         // debugger;
     }
@@ -94,20 +138,31 @@ class DomVar {
 
     initDomStruct() {
         if (this.name === 'root') return;
-        this.dom = document.createElement("div");
+
+        let typeDomEl = this.vRDelement ? this.vRDelement : 'div';
+        this.dom = document.createElement(typeDomEl);
         this.dom.textContent = this.textContent;
+
+        debugger;
+        if (this.vRD_id) this.dom.setAttribute('vRD_id', this.vRD_id);
+        if (this.id) this.dom.setAttribute('id', this.id);
 
 
         if (this.name) this.dom.classList.add(this.name);
+        if (this.onclick) {
+            debugger;
+            this.dom.setAttribute('onclick', this.onclick);
+        }
 
 
 
 
 
-        debugger;
         let node = this.name !== 'root' ? this.parNode.dom : document.body;
         node.appendChild(this.dom);
+        let atB = 0;
     }
+
     // constructor(nameVar, parentClassNode, val, idDataDomV) {
     //     this.nameVar = nameVar;
     //     this.parentClassNode = parentClassNode;
@@ -130,4 +185,5 @@ class DomVar {
         this.val = val;
         document.getElementById(`dataDomV${this.id}`).textContent = val;
     }
+
 }

@@ -5,10 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <!-- <script src="1.js"></script> -->
+  <script src="1.js"></script>
   <!-- <script src="2.js" defer></script> -->
 
   <!-- <script src="2.js" defer></script> -->
+  <script src="ProductsManager.js"></script>
   <script src="DomReact.js" defer></script>
 
   <script>
@@ -47,29 +48,19 @@
       },
     ];
 
-    let format = initialData.map(x => { return { product: x } });
+    let format = initialData.map(x => {
+      x['addReview'] = [{ vRDelement: 'input' }, {
+        vRDelement: 'button', text: 'Добавить',
+        onclick: 'prodManager.addReview(this)'
+      }]; return x;
+    });
+    format = format.map(x => { return { product: x } });
+
+    let prodManager = new ProductsManager(format);
     debugger;
 
-
-
-    // let templateMap = new Map([
-
-    //   ['product', {
-    //     parentNode: 'product-list',
-    //     className: 'product'
-    //   }],
-    //   ['reviews', {
-    //     parentNode: 'product',
-    //     className: 'reviews'
-    //   }],
-
-
-
-    // ]);
-
-
     document.addEventListener('DOMContentLoaded', function () {
-      const domReact = new DomReact(format, document.getElementsByClassName('product-list')[0]);
+      const domReact = new DomReact(format, document.getElementsByClassName('product-list')[0], true);
       window.domReact = domReact;
     }, false);
 
@@ -85,6 +76,16 @@
     .reviews {
       margin-left: 20px;
       font-size: 9px;
+    }
+
+    div.addReview.invalid:after {
+      content: 'Только 50-500 символов';
+      display: inline-block;
+      width: fit-content;
+      height: fit-content;
+      font-size: 11px;
+      margin-left: 12px;
+      color: red;
     }
   </style>
 
