@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="Popup.js"></script>
+    <script src="shopCoordinator.js"></script>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        .add-order {
+            background: linear-gradient(176deg, #eae2a4, #48d8b7);
+            border: solid black;
+            border-width: 1px;
+            width: fit-content;
+            padding: 20px;
+        }
+        .add-order__info {
+            margin-left: 10px;
+        }
+
+        body {
+            font-family: Sofia Sans Extra Condensed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="add-order__info"> Добавьте отзыв</div>
+
+    <form onsubmit="ShopCoordinator.addReview(event)" class="add-order">
+        Название товара:<input type="text" value="" class="add-order__name-product" required><br>
+        Текст отзыва:<input type="text" value="" class="add-order__review-text" required><br>
+        <input type="submit" value="Отправить">
+    </form>
+</body>
+
+
+</html>
