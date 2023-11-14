@@ -28,6 +28,17 @@ class ShopCoordinator {
 
             stored = JSON.stringify(Array.from(map.entries()));
             localStorage.setItem(ShopCoordinator.KEY_LOCAL_STORE, stored);
+        },
+        removeFromMap: function (localStokeKey, id) {
+            let stored = localStorage.getItem(localStokeKey);
+            if (!stored) return;
+
+            const map = new Map(JSON.parse(stored));
+            map.delete(id);
+
+            stored = JSON.stringify(Array.from(map.entries()));
+            localStorage.setItem(ShopCoordinator.KEY_LOCAL_STORE, stored);
+
         }
     }
 
@@ -36,6 +47,7 @@ class ShopCoordinator {
         this.products = new Map();
         this.reviews = new Map();
         this.products_list_dom = document.getElementsByClassName('products-list')[0];
+        window.shopCoordinator = this;
     }
 
     loadArticlesProducts() {
@@ -56,27 +68,68 @@ class ShopCoordinator {
                 const productContainer = document.createElement("div");
                 productContainer.classList.add('product');
                 productContainer.innerHTML = `<div class="product__name"> ${x.product} </div>
-                <div class="product__reviews"></div>
+                <details class="product__reviews" open>
+                <summary data-open="скрыть отзывы" data-close="показать отзывы"></summary>
+                </details>
                  `;
                 this.products_list_dom.appendChild(productContainer);
                 this.products.set(x.product, {
-                    name: x.product, dom: productContainer, reviews: [],
+                    name: x.product, dom: productContainer, reviews_list: [],
                     addReview: function (review) {
-                        this.reviews.push(review);
+                        this.reviews_list.push(review);
                         this.dom.getElementsByClassName('product__reviews')[0].appendChild(review.dom);
-                    }
+                    },
+                    deleteReview: (key) => {
+                        const reviewObj = this.reviews.get(key);
+                        const product = reviewObj.product;
+
+                        reviewObj.destroyDom();
+                        this.reviews.delete(key);
+                        product.reviews_list.splice(product.reviews_list.indexOf(reviewObj), 1);
+                        ShopCoordinator.localStorage.removeFromMap(ShopCoordinator.KEY_LOCAL_STORE, key);
+
+                        const destroyIfNoReviews = () => {
+                            if (product.reviews_list.length == 0) {
+                                debugger;
+                                this.products.delete(product.name);
+                                product.dom.remove();
+                            }
+                        };
+                        destroyIfNoReviews();
+                    },
                 });
             }
 
             const review = document.createElement("div");
-            review.classList.add('review');
-            review.textContent = x.review;
-            x['dom'] = review;
 
+            review.classList.add('review');
+
+            const reviewText = document.createElement("div");
+            reviewText.classList.add('review-data');
+            reviewText.textContent = x.review;
+            review.appendChild(reviewText);
+
+            x['dom'] = review;
             x['product'] = this.products.get(x.product);
             x['product'].addReview(x);
 
-            debugger;
+            const reviewDelBtn = document.createElement("button");
+            reviewDelBtn.classList.add('review-remove');
+            reviewDelBtn.classList.add('button-alive');
+            reviewDelBtn.textContent = 'удалить';
+
+            reviewDelBtn.setAttribute('onclick', `window.shopCoordinator.products.get('${x['product'].name}')
+            .deleteReview(${key})
+            `)
+            review.appendChild(reviewDelBtn);
+
+
+            x['destroyDom'] = function () {
+                this.dom.remove();
+            }
+
+
+
             this.reviews.set(key, x);
 
 
