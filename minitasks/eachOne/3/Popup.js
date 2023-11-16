@@ -23,9 +23,7 @@ class Popup {
         font-family: Impact;
         width: 80%;
         `;
-
         this.windo.appendChild(this.text);
-
     }
 
     showAndHide(msg) {
