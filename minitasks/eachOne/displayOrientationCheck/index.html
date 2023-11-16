@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=`, initial-scale=1.0">
+    <title>Document</title>
+
+    <script>
+
+        function getOrient(){
+            const orient = screen.orientation.type;
+            if(!orient)return 'Неподдерживается проверка ориентации';
+            if(orient.indexOf('landscape')>-1)return 'Ландшафтная';
+            if(orient.indexOf('portrait')>-1)return 'Портретная';
+        }
+        function showOrientDisplatAtDom(){
+            document.getElementById('display-info').textContent=getOrient();
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            showOrientDisplatAtDom();
+        });
+
+        window.addEventListener("orientationchange", function () {
+            showOrientDisplatAtDom();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="display-info">
+        Текущая ориентация экрана - <span id="display-info"></span>
+    </div>
+</body>
+
+</html>
