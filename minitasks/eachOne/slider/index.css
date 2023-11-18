@@ -22,6 +22,7 @@ img {
     display: flex;
     align-items: center;
 
+    position: relative;
 }
 
 .slider__control {
@@ -36,7 +37,7 @@ img {
 }
 
 .swipeFrom {
-    animation: swipeFrom linear  2500ms;
+    animation: swipeFrom linear 2500ms;
 }
 
 @keyframes swipeFrom {
@@ -49,6 +50,29 @@ img {
     }
 }
 
+.slider__pagination {
+    position: absolute;
+
+    display: flex;
+    gap: 3px;
+
+    bottom: 20px;
+
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+}
+
+.slider__pagination-item {
+    width: 7px;
+    border-radius: 50%;
+    height: 7px;
+    background: white;
+    border: solid black;
+    border-width: 1px;
+}
 
 
 /* 
