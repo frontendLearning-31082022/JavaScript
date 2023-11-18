@@ -1,3 +1,8 @@
+.slider-bar {
+    display: flex;
+    justify-content: center;
+}
+
 .slider {
     height: 400px;
     width: 400px;
@@ -10,14 +15,13 @@
 }
 
 img {
-    height: auto;
-    width: 100%;
+    width: auto;
 
-    max-height: inherit;
+    height: inherit;
 }
 
 .slider__imgs {
-    max-height: inherit;
+    height: inherit;
 
     display: flex;
     align-items: center;
@@ -28,6 +32,7 @@ img {
 .slider__control {
     width: 100%;
     display: flex;
+    justify-content: space-between;
     gap: 20px;
 }
 
@@ -43,10 +48,12 @@ img {
 @keyframes swipeFrom {
     0% {
         transform: translateX(var(--swipeFrom_0));
+        height: 100%;
     }
 
     100% {
         transform: translateX(var(--swipeFrom_100));
+        height: 100%;
     }
 }
 
