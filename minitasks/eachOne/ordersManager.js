@@ -126,7 +126,8 @@ class Manager {
     const order={
       orderData: orderData,
       id: this.#order_genIDs(),
-      workers: [...new Set(orderData.map(x => x.type))].map(x => this.#emploeyers_respons.get(x))
+      workers: [...new Set(orderData.map(x => x.type))].map(x => this.#emploeyers_respons.get(x)),
+      client: client
     };
     this.#orders.push(order)
 

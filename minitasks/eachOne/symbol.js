@@ -41,7 +41,7 @@ class MusicCollection {
 
 }
 
-let albums = [
+const albums = [
   {
     title: "The Works",
     artist: "Chris Rea",
@@ -59,8 +59,8 @@ let albums = [
   }
 ];
 
-let objj = new MusicCollection(albums);
+const objj = new MusicCollection(albums);
 
-for (let item of objj) {
+for (const item of objj) {
   console.log(item);
 }
