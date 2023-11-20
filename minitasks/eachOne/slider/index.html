@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,9 +9,15 @@
     <title>Document</title>
 
     <script src="./slider.js" defer></script>
-</head>
-<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Slider();
+        }, false);
+    </script>
 
+</head>
+
+<body>
     <div class="slider-bar">
         <div class="slider">
             <div class="slider__imgs">
@@ -24,7 +31,6 @@
             </div>
         </div>
     </div>
-
-
 </body>
+
 </html>
