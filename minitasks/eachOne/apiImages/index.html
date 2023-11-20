@@ -1,16 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="apiImages.js"></script>
+
+    <style>
+        .dayli-img__like-btn {
+            width: 20px;
+            cursor: pointer;
+        }
+        .dayli-img__about {
+            display: flex;
+        }
+        .likes {
+            display: flex;
+        }
+    </style>
 </head>
+
 <body>
-    
+
     <div id="dayli-img">
 
+        <div class="dayli-img__about">
+            <div id="dayli-img__author">
+                Подробнее об авторе:
+                <a></a>
+            </div>
+            <div class="likes">
+                <img src="./likeIcon.PNG" class="dayli-img__like-btn" >
+            </div>
+        </div>
     </div>
 </body>
+
 </html>
