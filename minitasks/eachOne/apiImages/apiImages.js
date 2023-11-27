@@ -80,7 +80,7 @@ function DayliImg() {
         img_url = objImg.urls.regular;
         img_url = img_url.replace(new RegExp("w=\\d*", "gm"), 'w=' + widthImg);
         el.src = img_url;
-        el.style = `height: 80vh;`;
+        el.style = `height: 80vh;  max-width: 80vw;`;
         daily_container.prepend(el);
 
         const author_container = document.getElementById('dayli-img__author');
@@ -174,7 +174,12 @@ DayliImg.prototype.authedFetch = async function (cntxt) {
 
         function authByRedirect() {
             const redirect_uri = `http://localhost:${document.location.port}`;
-            const authURL = `https://unsplash.com/oauth/authorize?client_id=${apikey}&redirect_uri=${cntxt.redirect_uri}&response_type=code&scope=public+write_likes`;
+            const authURL = `https://unsplash.com/oauth/authorize?client_id=${apikey}&redirect_uri=${cntxt.
+                redirect_uri}&response_type=code&scope=public+write_likes`;
+
+            const argee = confirm(`Вы будете перемещены на сайт unsplash.com для входа в систему.
+             Вы согласны ? Необходимо для внесения изменений на сайте unsplash.com(добавлние лайков итд).`);
+            if (!argee) return;
 
             window.location.href = authURL;
         }
