@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Document</title>
 
     <script src="apiImages.js"></script>
-    <!-- <script src="apiImages2.js"></script> -->
+    <script>
+        const dayliImgObj = DayliImg();
+        dayliImgObj.init();
+    </script>
 
     <style>
         .dayli-img__like-btn {
@@ -33,13 +37,16 @@
             display: flex;
             margin-left: 20px;
         }
+
+        .likes__count {
+            margin-left: 5px;
+        }
     </style>
 </head>
 
 <body>
 
     <div id="dayli-img">
-
         <div class="dayli-img__about">
             <div id="dayli-img__author">
                 Подробнее об авторе:
@@ -47,9 +54,11 @@
             </div>
             <div class="likes">
                 <img src="./likeIcon.PNG" class="dayli-img__like-btn">
+                <div class="loading"></div>
             </div>
         </div>
     </div>
+
 </body>
 
 </html>

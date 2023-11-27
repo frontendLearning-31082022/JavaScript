@@ -1,7 +1,4 @@
-const access_token = 'hzYjC4fI0hTcIVkD3TMbLlrg7nzxSqxGi0VPGiLO4nI';
-
 function DayliImg() {
-    let data = 1;
     const LOCAL_STORE_KEY = 'apiImages';
     const imgExpiresSecs = 1 * 60 * 60 * 24;
 
@@ -10,31 +7,33 @@ function DayliImg() {
     let idImg = null;
     let objImg = null;
 
-    const apikey = 'TDCuJqpG4FUUcP6Uy-mmEONvlLDx8x5f2JDPL7pIuYo';
+    const redirect_uri = `http://localhost:${document.location.port}`;
+
+    let fetchAuth = null;
+    const loginPromis = DayliImg.prototype.authedFetch({ redirect_uri: redirect_uri }).then(x => fetchAuth = x)
 
     function loadImg() {
-
         document.addEventListener('DOMContentLoaded', function () {
-            new Promise((resolve, reject) => {
+            loginPromis.then(x => {
+                fetchAuth = x;
+                return x;
+            }).then(x => {
                 if (!checkAlready()) {
-                    getNewRandomImg().then(x => resolve())
+                    return getNewRandomImg();
                 } else {
-                    resolve();
+                    return Promise.resolve();
                 }
             }).then(finished => {
-                return getImgUrl(`https://api.unsplash.com/photos/${idImg}/?client_id=${apikey}`);
+                return getImgUrl(`https://api.unsplash.com/photos/${idImg}/`);
             }).then(finished => {
                 renderImg();
             }).catch(er => {
                 console.log(er);
             })
         }, false);
-
-
     }
 
     function checkAlready() {
-
         let alreadyImg = localStorage.getItem(LOCAL_STORE_KEY);
         if (!alreadyImg) return false;
 
@@ -49,45 +48,32 @@ function DayliImg() {
     }
 
     async function getNewRandomImg() {
-        let res = null;
-        await getImgUrl(`https://api.unsplash.com/photos/random?client_id=${apikey}`);
+        await getImgUrl(`https://api.unsplash.com/photos/random`);
+        if (idImg == null) {
+            console.error('Не удалось запросить новое изображение');
+            return;
+        }
         localStorage.setItem(LOCAL_STORE_KEY, JSON.stringify({ date: (new Date).getTime(), id: idImg }));
     }
 
     async function getImgUrl(url) {
-        await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${access_token}`
+        return fetchAuth(url, {
+            method: 'GET'
+        }).then(response => {
+            if (!response.ok) {
+                console.log(response);
+                throw new Error(`responce per hour exceeded? ${response}`);
             }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    alert('responce per hour exceeded');
-                    console.log(response);
-                    throw new Error(`responce per hour exceeded? ${response}`);
-                }
-
-                return response.json();
-            })
-            .then(objX => {
-                debugger;
-                objImg = objX;
-                idImg = objX.id;
-            })
-            .catch(er => {
-                debugger;
-                console.log(er);
-            });
-        return Promise.resolve();
+            return response.json();
+        }).then(objX => {
+            objImg = objX;
+            idImg = objX.id;
+        }).catch(er => {
+            console.log(er);
+        });
     }
 
-
     function renderImg() {
-
-
-        // getImgUrl(`https://api.unsplash.com/photos/${idImg}/?client_id=${apikey}`).then(img_src => {
-
         const daily_container = document.getElementById('dayli-img');
 
         const el = document.createElement('img');
@@ -108,19 +94,16 @@ function DayliImg() {
         likes_count.className = 'likes__count';
         likes_count.textContent = objImg.likes;
 
-
-
         daily_container.getElementsByClassName('likes')[0].appendChild(likes_count);
 
         const likeBtn = daily_container.getElementsByClassName('dayli-img__like-btn')[0];
         likeBtn.setAttribute('onclick', `dayliImgObj.likeSwitch(this)`);
         likeBtn.setAttribute('liked', objImg.liked_by_user);
-        // })
-
     }
 
+    DayliImg.prototype.progressBar.init();
     function likeSwitch(event) {
-        DayliImg.prototype.likes.switchLike(event, { idImg: idImg, apikey: apikey });
+        DayliImg.prototype.likes.switchLike(event, { idImg: idImg, fetch: fetchAuth });
     }
 
     const obj = {
@@ -129,50 +112,161 @@ function DayliImg() {
     };
     window.dayliImgObj = obj;
 
-
     return obj;
 }
 
 DayliImg.prototype.likes = {
     switchLike: function (domEl, cntx) {
-        // const newLikeState = !Boolean(domEl.getAttribute('liked'));
         const newLikeState = !(domEl.getAttribute('liked') == 'true');
 
-        fetch(`https://api.unsplash.com/photos/${cntx.idImg}/like?client_id=${cntx.apikey}`, {
-            method: newLikeState ? 'POST' : 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${access_token}`
+        const serverReturnNoUpdatedData = function () {
+            const countBefore = +domEl.parentNode.getElementsByClassName('likes__count')[0].textContent;
+            const divLikesCount = domEl.parentNode.getElementsByClassName('likes__count')[0];
+
+            function newCount() {
+                const newCount = divLikesCount.textContent;
+                if (newCount != countBefore) return;
+                console.error(`сервер вернул старое кол-во like's (${newCount})`)
+                let newVal = newLikeState ? +countBefore + 1 : +countBefore - 1;
+                divLikesCount.innerText = newVal;
             }
+            return newCount;
+        }();
+
+        DayliImg.prototype.progressBar.on(domEl.parentNode);
+
+        cntx.fetch(`https://api.unsplash.com/photos/${cntx.idImg}/like`, {
+            method: newLikeState ? 'POST' : 'DELETE'
         }).then(res => {
             if (!(res.statusText != 'Created' | res.statusText != 'OK')) throw new Exception(res);
             domEl.setAttribute('liked', newLikeState);
-            DayliImg.prototype.likes.getLikesCount(cntx.idImg, cntx.apikey);
+            setTimeout(() => {
+                DayliImg.prototype.likes.getLikesCount(cntx.idImg, cntx.fetch).then(x => {
+                    serverReturnNoUpdatedData();
+                    DayliImg.prototype.progressBar.off(domEl.parentNode);
+                })
+            }, 2000);
         }).catch(er => {
             console.log(er);
         });
     },
-    getLikesCount: async function (idImg, apikey) {
-
-        debugger;
-        await fetch(`https://api.unsplash.com/photos/${idImg}/?client_id=${apikey}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${access_token}`
-            }
-        })
-            .then(response => response.json())
+    getLikesCount: async function (idImg, fetch) {
+        await fetch(`https://api.unsplash.com/photos/${idImg}/`, {
+            method: 'GET'
+        }).then(response => response.json())
             .then(objX => {
-                debugger;
                 const daily_container = document.getElementById('dayli-img');
                 daily_container.getElementsByClassName('likes__count')[0].textContent = objX.likes;
             })
             .catch(x => { console.log(x); });
-
     }
 
 };
 
+DayliImg.prototype.authedFetch = async function (cntxt) {
+    const apikey = 'TDCuJqpG4FUUcP6Uy-mmEONvlLDx8x5f2JDPL7pIuYo';
+    const whiteList = ['https://api.unsplash.com/.*'];
 
+    async function tokenInit() {
+        let token = null;
 
-const dayliImgObj = DayliImg();
-dayliImgObj.init();
+        const urlParams = new URLSearchParams(document.location.search);
+
+        function authByRedirect() {
+            const redirect_uri = `http://localhost:${document.location.port}`;
+            const authURL = `https://unsplash.com/oauth/authorize?client_id=${apikey}&redirect_uri=${cntxt.redirect_uri}&response_type=code&scope=public+write_likes`;
+
+            window.location.href = authURL;
+        }
+        const authCode = urlParams.get('code');
+        if (!authCode) authByRedirect();
+
+        let response = await fetch('https://unsplash.com/oauth/token?' +
+            `client_id=${apikey}&client_secret=Po8Dyi0F2iXYsp3m1Z5LHrhAzUXFSNWlMT3Y3MOpcuo&redirect_uri=${cntxt.redirect_uri}` +
+            `&code=${authCode}&grant_type=authorization_code`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            }
+        }).then(x => {
+            if (!x.ok) return x.text().then(x => { return { type: 'error', text: x } });
+            return x.json();
+        }).then(x => {
+            if (x.type == 'error') {
+                if (x.text.indexOf('The provided authorization grant is invalid, expired, revoked') > -1) {
+                    authByRedirect();
+                } else if (x.text.indexOf('Rate Limit Exceeded') > -1) {
+                    alert(x.text);
+                } else {
+                    throw new Error(x.error);
+                }
+            }
+
+            if (x.error) {
+                if (x.error == 'invalid_grant') authByRedirect();
+            }
+            token = x.access_token;
+        }).catch(er => {
+            console.log(er);
+        })
+
+        function fetchInner(url, options) {
+            if (!whiteList.some(x => url.match(x))) throw new Error('url not accessed');
+
+            if (token) {
+                if (!options.headers) {
+                    options.headers = {};
+                }
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+            const apiKeyAddToUrl = new URL(url);
+            apiKeyAddToUrl.searchParams.append('client_id', apikey);
+
+            return fetch(apiKeyAddToUrl, options);
+        }
+        return fetchInner;
+    }
+
+    const fnFetch = await tokenInit();
+    return fnFetch;
+}
+
+DayliImg.prototype.progressBar = {
+    init: function () {
+        let bar = document.createElement('style');
+        bar.textContent = ` @-moz-keyframes spinoffPulse {
+            0% { -moz-transform:rotate(0deg); }
+            100% { -moz-transform:rotate(360deg);  }
+        }
+        @-webkit-keyframes spinoffPulse {
+            0% { -webkit-transform:rotate(0deg); }
+            100% { -webkit-transform:rotate(360deg); }
+        }
+        
+        .loading {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+            border: dashed;
+            display:none;
+            -moz-animation: spinoffPulse 1s infinite linear;
+            -webkit-animation: spinoffPulse 1s infinite linear;
+          }
+          .loading-active{
+            display:initial;
+          }
+       
+        `;
+        document.head.appendChild(bar);
+    },
+    on: function (domEl) {
+        const el = domEl.getElementsByClassName('loading')[0];
+        el.classList.add('loading-active');
+    },
+    off: function (domEl) {
+        const el = domEl.getElementsByClassName('loading')[0];
+        while (el.classList.contains('loading-active')) el.classList.remove('loading-active');
+    }
+}
