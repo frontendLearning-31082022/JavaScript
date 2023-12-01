@@ -5,7 +5,8 @@ class TicTacToe {
     constructor() {
         this.firstPlayer = Math.random() < 0.5;
         this.playerX = this.firstPlayer;
-        this.gameStopped=false;
+        this.gameStopped = false;
+        this.gameResult=null;
 
         this.#genDom();
         this.nodes = [
@@ -17,9 +18,9 @@ class TicTacToe {
         window[`${TicTacToe.class_container.replaceAll('-', '_')}`] = this;
     }
 
-    stopGame(){
-        this.gameStopped=true;
-        alert('Игра прервана')
+    stopGame() {
+        this.gameResult='Игра прервана';
+        alert(this.gameResult);
     }
 
     #genDom() {
@@ -55,21 +56,21 @@ class TicTacToe {
 
         const btn_stopGame = document.createElement('button');
         btn_stopGame.innerText = `Отказаться от игры`
-        btn_stopGame.style='font-size: 8px;';
-        btn_stopGame.setAttribute('onclick',`${TicTacToe.class_container.replaceAll('-', '_')}.stopGame()`)
+        btn_stopGame.style = 'font-size: 8px;';
+        btn_stopGame.setAttribute('onclick', `${TicTacToe.class_container.replaceAll('-', '_')}.stopGame()`)
         document.getElementsByClassName(TicTacToe.class_container)[0].appendChild(btn_stopGame);
 
         const curPlayer = document.createElement('div');
         curPlayer.innerText = `Текущий игрок - `;
         curPlayer.className = `current-player`;
-        curPlayer.style='font-size: 8px; display:flex;';
+        curPlayer.style = 'font-size: 8px; display:flex;';
         document.getElementsByClassName(TicTacToe.class_container)[0].appendChild(curPlayer);
-        const curPlayerName  = document.createElement('div');
+        const curPlayerName = document.createElement('div');
         curPlayerName.className = `current-player__name`;
         curPlayerName.innerText = "Первый игрок";
-        curPlayerName.style='font-size: 8px;';
+        curPlayerName.style = 'font-size: 8px;';
         curPlayer.appendChild(curPlayerName);
-        this.curPlayerDom=curPlayerName;
+        this.curPlayerDom = curPlayerName;
 
         const boardDom = document.createElement('div');
         boardDom.className = TicTacToe.class_container + '__board';
@@ -86,14 +87,13 @@ class TicTacToe {
     set curSymbol(val) {
         this.playerX = val;
     }
-    changeUserNameDom(){
-
-        this.curPlayerDom.textContent=(this.firstPlayer==this.playerX ? 'Первый' : 'Второй')+' игрок';
+    changeUserNameDom() {
+        this.curPlayerDom.textContent = (this.firstPlayer == this.playerX ? 'Первый' : 'Второй') + ' игрок';
     }
 
     checkSituation() {
-        if(this.gameStopped){
-            alert('Игра прервана')
+        if (this.gameResult) {
+            alert(this.gameResult);
             return;
         }
 
@@ -104,13 +104,13 @@ class TicTacToe {
             this.#defineWinner(this.nodes.map(x => x[index]));
         }
         const bN = (i) => { return window[`${TicTacToe.class_cell.replaceAll('-', '_')}_${i}`]; };
-        debugger;
         this.#defineWinner([bN(0), bN(4), bN(8)]);
         this.#defineWinner([bN(2), bN(4), bN(6)]);
 
 
         if (this.nodes.every(x => x.filled)) {
-            alert('Ничья!');
+            this.gameResult='Ничья!';
+            alert(this.gameResult);
             return;
         }
     }
@@ -125,7 +125,8 @@ class TicTacToe {
         if (rowVal.size != 1) return;
         if (rowVal.has(null)) return;
         const winner = rowVal.keys().next().value == (this.firstPlayer ? 'X' : 'O') ? 'первый' : 'второй';
-        alert(`Победитель ${winner} игрок`);
+        this.gameResult=`Победитель ${winner} игрок`;
+        alert(this.gameResult);
     }
 
 }
@@ -160,4 +161,3 @@ class NodeTicTacToe {
         window[`${TicTacToe.class_container.replaceAll('-', '_')}`].checkSituation();
     }
 }
-
