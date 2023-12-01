@@ -31,14 +31,14 @@ class TicTacToe {
             width: 50vw;
             height: 50vh;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-columns: 20vh 20vh 20vh;
+            grid-template-rows: 20vh 20vh 20vh;
         }
 
         .${TicTacToe.class_cell} {
             border: solid black;
             border-width: 2px;
-            font-size: 10cqw;
+            font-size: 14vh;
             display: block;
             text-align: center;
               cursor: pointer;
@@ -46,6 +46,9 @@ class TicTacToe {
               -webkit-user-select: none;
               user-select: none;
               aspect-ratio: 1/1;
+              display: flex;
+            align-items: center;
+            justify-content: center;
         }
         `;
         document.head.appendChild(styling);
@@ -158,7 +161,10 @@ class NodeTicTacToe {
         this.symbol = TicTacToe.getWindowObj().curSymbol ? 'X' : 'O';
         this.filled = true;
 
-        this.dom.textContent = this.symbol;
+        const textSymbol = document.createElement('span');
+        textSymbol.textContent = this.symbol;
+
+        this.dom.appendChild(textSymbol);
         this.dom.classList.add('player_' + this.symbol);
         TicTacToe.getWindowObj().checkSituation();
     }
