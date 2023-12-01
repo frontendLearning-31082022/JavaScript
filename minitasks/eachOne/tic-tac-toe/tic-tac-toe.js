@@ -1,12 +1,13 @@
 class TicTacToe {
     static class_container = 'tic-tac-toe';
     static class_cell = 'tic-tac-toe__cell';
+    static getWindowObj = function () { return window[`${TicTacToe.class_container.replaceAll('-', '_')}`]; }
 
     constructor() {
         this.firstPlayer = Math.random() < 0.5;
         this.playerX = this.firstPlayer;
         this.gameStopped = false;
-        this.gameResult=null;
+        this.gameResult = null;
 
         this.#genDom();
         this.nodes = [
@@ -19,7 +20,7 @@ class TicTacToe {
     }
 
     stopGame() {
-        this.gameResult='Игра прервана';
+        this.gameResult = 'Игра прервана';
         alert(this.gameResult);
     }
 
@@ -57,7 +58,7 @@ class TicTacToe {
         const btn_stopGame = document.createElement('button');
         btn_stopGame.innerText = `Отказаться от игры`
         btn_stopGame.style = 'font-size: 8px;';
-        btn_stopGame.setAttribute('onclick', `${TicTacToe.class_container.replaceAll('-', '_')}.stopGame()`)
+        btn_stopGame.setAttribute('onclick', `TicTacToe.getWindowObj().stopGame()`)
         document.getElementsByClassName(TicTacToe.class_container)[0].appendChild(btn_stopGame);
 
         const curPlayer = document.createElement('div');
@@ -103,13 +104,13 @@ class TicTacToe {
         for (let index = 0; index < 3; index++) {
             this.#defineWinner(this.nodes.map(x => x[index]));
         }
-        const bN = (i) => { return window[`${TicTacToe.class_cell.replaceAll('-', '_')}_${i}`]; };
+        const bN = (i) => { return NodeTicTacToe.getWindowObj(i); };
         this.#defineWinner([bN(0), bN(4), bN(8)]);
         this.#defineWinner([bN(2), bN(4), bN(6)]);
 
 
         if (this.nodes.every(x => x.filled)) {
-            this.gameResult='Ничья!';
+            this.gameResult = 'Ничья!';
             alert(this.gameResult);
             return;
         }
@@ -125,13 +126,14 @@ class TicTacToe {
         if (rowVal.size != 1) return;
         if (rowVal.has(null)) return;
         const winner = rowVal.keys().next().value == (this.firstPlayer ? 'X' : 'O') ? 'первый' : 'второй';
-        this.gameResult=`Победитель ${winner} игрок`;
+        this.gameResult = `Победитель ${winner} игрок`;
         alert(this.gameResult);
     }
 
 }
 
 class NodeTicTacToe {
+    static getWindowObj = function (index) { return window[`${TicTacToe.class_cell.replaceAll('-', '_')}_${index}`]; }
     constructor(index) {
         this.symbol = null;
         this.index = index;
@@ -143,7 +145,7 @@ class NodeTicTacToe {
     #genDom(index) {
         this.dom = document.createElement('div');
         this.dom.classList.add(TicTacToe.class_cell);
-        this.dom.setAttribute("onclick", `${TicTacToe.class_cell.replaceAll('-', '_')}_${index}.draw()`);
+        this.dom.setAttribute("onclick", `NodeTicTacToe.getWindowObj(${index}).draw()`);
 
         document.getElementsByClassName(TicTacToe.class_container + "__board")[0].appendChild(this.dom);
     }
@@ -153,11 +155,11 @@ class NodeTicTacToe {
             return;
         }
 
-        this.symbol = window[`${TicTacToe.class_container.replaceAll('-', '_')}`].curSymbol ? 'X' : 'O';
+        this.symbol = TicTacToe.getWindowObj().curSymbol ? 'X' : 'O';
         this.filled = true;
 
         this.dom.textContent = this.symbol;
         this.dom.classList.add('player_' + this.symbol);
-        window[`${TicTacToe.class_container.replaceAll('-', '_')}`].checkSituation();
+        TicTacToe.getWindowObj().checkSituation();
     }
 }

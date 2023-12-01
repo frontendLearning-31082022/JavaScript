@@ -3,9 +3,9 @@ class TicTacToeConsole extends TicTacToe {
         var overridedAlert = alert;
         window['alert'] = function (txt) {
             if (txt == 'уже заполнено!') { console.error(txt); return; }
-            if (txt.indexOf('Победитель')>-1) {
+            if (txt.indexOf('Победитель') > -1) {
                 console.log(`%c ${txt} `, 'background: #222; color: #bada55');
-                window[`${TicTacToe.class_container.replaceAll('-', '_')}`].printBoard();
+                TicTacToe.getWindowObj().printBoard();
                 return;
             }
 
@@ -25,9 +25,9 @@ class TicTacToeConsole extends TicTacToe {
 
 
         console.log('Для запуска введите st()');
-        window.st = () => { window[`${TicTacToe.class_container.replaceAll('-', '_')}`].printBoard() };
+        window.st = () => { TicTacToe.getWindowObj().printBoard() };
         window.st = function () {
-            const objGame = window[`${TicTacToe.class_container.replaceAll('-', '_')}`];
+            const objGame = TicTacToe.getWindowObj();
             while (true) {
                 if (objGame.gameResult) break;
                 objGame.printNextMove();
@@ -38,7 +38,7 @@ class TicTacToeConsole extends TicTacToe {
 
     printBoard() {
         const bN = (i) => {
-            const obj = window[`${TicTacToe.class_cell.replaceAll('-', '_')}_${i}`];
+            const obj = NodeTicTacToe.getWindowObj(i);
             return obj.filled ? '\t' + obj.symbol + '\t' : '\t\t'
         };
         console.log(
@@ -72,7 +72,7 @@ class TicTacToeConsole extends TicTacToe {
     }
 
     #fillCell(index) {
-        window[`${TicTacToe.class_cell.replaceAll('-', '_')}_${index}`].draw();
+        NodeTicTacToe.getWindowObj(index).draw();
     }
 }
 
