@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+    <script src="/chartPearson.js"></script>
+
+    <script src="/pearsonFn.js"></script>
+
+    <script>
+        let between = [0, 100];
+        function genArrays() {
+            const count = document.getElementById('count-nums').value;
+            const ar1 = document.getElementsByClassName('arr1__vals')[0];
+            const ar2 = document.getElementsByClassName('arr2__vals')[0];
+
+            ar1.value = Array.from({ length: count }, () => Math.floor(Math.random() * (between[1] - between[0] + 1) + between[0]));
+            ar2.value = Array.from({ length: count }, () => Math.floor(Math.random() * (between[1] - between[0] + 1) + between[0]));
+        }
+        function pearsCalc() {
+            const ar1 = document.getElementsByClassName('arr1__vals')[0].value.split(',');
+            const ar2 = document.getElementsByClassName('arr2__vals')[0].value.split(',');
+
+            const ratioPearse= pearsonCorrelation.calc(ar1,ar2);
+            document.getElementById('peapson-calc__val').textContent=ratioPearse;
+        }
+    </script>
+    <style>
+        input {
+            width: 90vw;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="values">
+        Кол-во знаков<input type="text" id="count-nums" value="10">
+        <div class="arr1">Массив 1<input class="arr1__vals"></input></div>
+        <div class="arr2">Массив 2<input class="arr2__vals" maxlength="4"></input></div>
+
+        <button onclick="genArrays()">Random</button>
+    </div>
+
+    <div class="show-chart">
+        <button onclick="showChart()">Gen график</button>
+    </div>
+
+    <div class="peapson-calc">
+        <button onclick="pearsCalc()">Коэффициент корреляции Пирсона</button>
+        <div id="peapson-calc__val"></div>
+    </div>
+
+    <canvas id="myChart1"></canvas>
+
+</body>
+
+</html>
